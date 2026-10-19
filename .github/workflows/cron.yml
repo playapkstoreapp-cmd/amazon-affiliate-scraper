@@ -1,9 +1,9 @@
-name: Daily Amazon Affiliate Scraper
+name: RSS Product Feed Sync
 
 on:
   schedule:
-    - cron: '0 6 * * *'
-  workflow_dispatch:
+    - cron: '0 6 * * *' # Runs daily at 6 AM UTC
+  workflow_dispatch: # Run anytime manually
 
 jobs:
   build:
@@ -19,19 +19,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'   # <-- Updated to Node 20 to fix global type reference errors
+          node-version: '20'
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Scraper Script
+      - name: Run RSS Parser Script
         run: node scrape.js
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.name "Amazon Bot Automation"
+          git config --global user.name "RSS Feed Bot"
           git config --global user.email "bot@users.noreply.github.com"
           git pull origin main --rebase --allow-unrelated-histories || true
           git add jobs.json
-          git commit -m "Automated daily product catalog sync with real items" || echo "No changes to commit"
+          git commit -m "Automated RSS feed product sync" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
